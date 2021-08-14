@@ -3,19 +3,12 @@ package com.grupo.listaEspera.services;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.stereotype.Service;
-
 import com.grupo.listaEspera.models.User;
 import com.grupo.listaEspera.repositories.UserRepository;
 
-@Service
 public class UserService {
 	
 	private UserRepository userRepository;
-    
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 	
 	public List<User> allUser() {
         return userRepository.findAll();
@@ -45,8 +38,6 @@ public class UserService {
             return;
         }
     }
-	public User findByEmail(String email) {
-		return userRepository.findByEmail(email);
-	}
+	
 }
 
