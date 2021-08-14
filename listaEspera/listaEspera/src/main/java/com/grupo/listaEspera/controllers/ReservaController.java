@@ -1,0 +1,76 @@
+package com.grupo.listaEspera.controllers;
+import java.util.List;
+import java.util.Random;
+
+import javax.validation.Valid;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.grupo.listaEspera.models.Reserva;
+import com.grupo.listaEspera.services.ReservaService;
+import com.grupo.listaEspera.services.UserService;
+
+@Controller
+public class ReservaController {
+	private UserService userService;
+	private ReservaService reservaService;
+	
+	
+	public ReservaController(UserService userService, ReservaService reservaService) {
+	
+		this.userService = userService;
+		this.reservaService = reservaService;
+	}
+	
+	  @RequestMapping("/reservas")
+	    public String reservas(Model model) {
+	        List<Reserva> reservas = reservaService.allReservas();
+	        model.addAttribute("reservas", reservas);
+	        return "home.jsp";
+	    }
+	
+	
+	//nueva reserva para usuarios ya registrados
+	   @PostMapping("/nuevaReserva")
+	   public String nuevaReserva ( @Valid @ModelAttribute ("reserva") Reserva reserva, BindingResult result) {
+		     if(result.hasErrors()) {
+		    	 	return "home.jsp";
+				}else {
+				    reservaService.createNuevaReserva(reserva);
+				    Random Num_Reserva = new Random();
+			    	int minNumber = 10000;
+					int Random = Num_Reserva.nextInt(minNumber) + 1;
+			        reserva.setNumeroReserva(Random);
+				    reservaService.defaultEstadoR(reserva);
+				    return "redirect:/";
+				}   
+			  }
+	   
+	   //seguro hay un metodo para hablitar y deshabilitar pero yo no s[e hacerlo juntos 
+
+	   @RequestMapping("/reserva/habilitar/{id}")
+	   public String activar (@PathVariable("id") Long id) {
+		   Reserva reserva=reservaService.findById(id);
+		   Boolean estadoR=true;
+		   reserva.setEstadoR(estadoR);
+		   reservaService.updateReserva(reserva);
+		   return  "redirect:/reservas";
+	   }
+
+	   @RequestMapping("/reserva/deshabilitar/{id}")
+	   public String deshabilitar (@PathVariable("id") Long id) {
+		   Reserva reserva=reservaService.findById(id);
+		   Boolean estadoR=false;
+		   reserva.setEstadoR(estadoR);
+		   reservaService.updateReserva(reserva);
+		   return  "redirect:/reservas";
+	   }
+
+
+}
