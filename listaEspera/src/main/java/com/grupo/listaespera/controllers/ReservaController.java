@@ -25,80 +25,76 @@ public class ReservaController {
 	
 	
 	public ReservaController(UserService userService, ReservaService reservaService) {
-	
+
 		this.userService = userService;
 		this.reservaService = reservaService;
 	}
-	
-//	  @RequestMapping("/reservas")
-//	    public String reservas(Model model) {
-//	        List<Reserva> reservas = reservaService.allReservas();
-//	        model.addAttribute("reservas", reservas);
-//	        return "home.jsp";
-//	    }
-	
-	
+
+	@RequestMapping("/reservas")
+	public  List<Reserva> reservas() {
+		return reservaService.allReservas();
+	}
+
+
 	//nueva reserva para usuarios ya registrados
-	   @PostMapping("/nuevaReserva/{usuarioId}")
-	   public String nuevaReserva ( @Valid @ModelAttribute ("reserva") Reserva reserva, BindingResult result,
-			   @PathVariable("usuarioId") Long usuarioId) {
-		     if(result.hasErrors()) {
-		    	 	return "home.jsp";
-				}else {
-					User user=userService.findUser(usuarioId);
-				    
-				    Random Num_Reserva = new Random();
-			    	int minNumber = 10000;
-					int Random = Num_Reserva.nextInt(minNumber) + 1;
-			        reserva.setNumeroReserva(Random);
-				    //reservaService.defaultEstadoR(reserva);
-			        reserva.setEstadoR(true);
-			        reserva.setUser(user);
-				    reservaService.createNuevaReserva(reserva);
-				    return "creada nueva reserva";
-				}   
-			  }
-	   //incorporado por alvaro 14/8
-//		//metodo temporal de prueba
-		@RequestMapping(value="/reserva/crear/usuario/{email}",method=RequestMethod.POST)
-		public String crearReserva(@Valid @ModelAttribute ("reserva") Reserva reserva, BindingResult result,
-				@PathVariable("email") String email) {
-			
-			if(result.hasErrors()) {
-				return "error creando reserva";
-			}
-			User user=userService.findByEmail(email);
-			reserva.setUser(user);
+	@PostMapping("/nuevaReserva/{usuarioId}")
+	public String nuevaReserva ( @Valid @ModelAttribute ("reserva") Reserva reserva, BindingResult result,
+			@PathVariable("usuarioId") Long usuarioId) {
+		if(result.hasErrors()) {
+			return "home.jsp";
+		}else {
+			User user=userService.findUser(usuarioId);
+
+			Random Num_Reserva = new Random();
+			int minNumber = 10000;
+			int Random = Num_Reserva.nextInt(minNumber) + 1;
+			reserva.setNumeroReserva(Random);
 			reserva.setEstadoR(true);
-			Random Num_Orden = new Random();
-	    	int minNumber = 100000;
-			int random = Num_Orden.nextInt(minNumber) + 1;
-			reserva.setNumeroReserva(random);
+			reserva.setUser(user);
 			reservaService.createNuevaReserva(reserva);
-			return "reserva creada";
-			 
+			return "creada nueva reserva";
+		}   
+	}
+
+
+	@RequestMapping(value="/reserva/crear/usuario/{email}",method=RequestMethod.POST)
+	public String crearReserva(@Valid @ModelAttribute ("reserva") Reserva reserva, BindingResult result,
+			@PathVariable("email") String email) {
+
+		if(result.hasErrors()) {
+			return "error creando reserva";
 		}
-	   
-	   
-	   //seguro hay un metodo para hablitar y deshabilitar pero yo no s[e hacerlo juntos 
+		User user=userService.findByEmail(email);
+		reserva.setUser(user);
+		reserva.setEstadoR(true);
+		Random Num_Orden = new Random();
+		int minNumber = 100000;
+		int random = Num_Orden.nextInt(minNumber) + 1;
+		reserva.setNumeroReserva(random);
+		reservaService.createNuevaReserva(reserva);
+		return "reserva creada";
 
-	   @RequestMapping("/reserva/habilitar/{id}")
-	   public String activar (@PathVariable("id") Long id) {
-		   Reserva reserva=reservaService.findReserva(id);
-		   Boolean estadoR=true;
-		   reserva.setEstadoR(estadoR);
-		   reservaService.updateReserva(reserva);
-		   return  "reserva habilitada";
-	   }
+	}
 
-	   @RequestMapping("/reserva/deshabilitar/{id}")
-	   public String deshabilitar (@PathVariable("id") Long id) {
-		   Reserva reserva=reservaService.findReserva(id);
-		   Boolean estadoR=false;
-		   reserva.setEstadoR(estadoR);
-		   reservaService.updateReserva(reserva);
-		   return  "reserva deshabilitada";
-	   }
+
+
+	@RequestMapping("/reserva/habilitar/{id}")
+	public String activar (@PathVariable("id") Long id) {
+		Reserva reserva=reservaService.findReserva(id);
+		Boolean estadoR=true;
+		reserva.setEstadoR(estadoR);
+		reservaService.updateReserva(reserva);
+		return  "reserva habilitada";
+	}
+
+	@RequestMapping("/reserva/deshabilitar/{id}")
+	public String deshabilitar (@PathVariable("id") Long id) {
+		Reserva reserva=reservaService.findReserva(id);
+		Boolean estadoR=false;
+		reserva.setEstadoR(estadoR);
+		reservaService.updateReserva(reserva);
+		return  "reserva deshabilitada";
+	}
 
 
 }
