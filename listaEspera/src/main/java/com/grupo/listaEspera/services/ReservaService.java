@@ -10,16 +10,18 @@ import com.grupo.listaEspera.repositories.ReservaRepository;
 
 @Service
 public class ReservaService {
+	
+	ReservaRepository reservaRepository;
+	
 
-    private final ReservaRepository reservaRepository;
-    
-    public ReservaService(ReservaRepository reservaRepository) {
-        this.reservaRepository = reservaRepository;
-    }
+	public List<Reserva> allReservas() {
+		return reservaRepository.findAll();
+	}
 
-    public List<Reserva> allReserva() {
-        return reservaRepository.findAll();
-    }
+	public Reserva findById(Long id) {
+		return reservaRepository.finById();
+	}
+	
     public Reserva findReserva(Long id) {
         Optional<Reserva> optionalReserva = reservaRepository.findById(id);
         if(optionalReserva.isPresent()) {
@@ -28,9 +30,20 @@ public class ReservaService {
             return null;
         }
     }
-	public Reserva createOrUpdateReserva(Reserva reserva) {
+	public Reserva createNuevaReserva(Reserva reserva) {
         return reservaRepository.save(reserva);
-    }
+	}
+    
+	 public Reserva updateReserva(Reserva reserva) {
+	    return reservaRepository.save(reserva);
+	  }
+	 
+	 public void defaultEstadoR (Reserva reserva) {
+			reserva.setEstadoR(true);
+			reservaRepository.save(reserva);
+		}
+        
+    
 	public void deleteReserva(Long id) {
     	Optional<Reserva> optionalReserva = reservaRepository.findById(id);
         if(optionalReserva.isPresent()) {
@@ -39,4 +52,7 @@ public class ReservaService {
             return;
         }
     }
+	
 }
+
+

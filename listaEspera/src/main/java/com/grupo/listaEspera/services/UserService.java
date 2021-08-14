@@ -12,10 +12,6 @@ import com.grupo.listaEspera.repositories.UserRepository;
 public class UserService {
 	
 	private UserRepository userRepository;
-    
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
-    }
 	
 	public List<User> allUser() {
         return userRepository.findAll();
@@ -28,6 +24,11 @@ public class UserService {
             return null;
         }
     }
+    
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+    
 	public User createUser(User user) {
         return userRepository.save(user);
 	}
@@ -45,8 +46,6 @@ public class UserService {
             return;
         }
     }
-	public User findByEmail(String email) {
-		return userRepository.findByEmail(email);
-	}
+	
 }
 

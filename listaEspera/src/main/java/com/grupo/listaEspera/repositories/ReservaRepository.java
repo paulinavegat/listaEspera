@@ -8,6 +8,10 @@ import org.springframework.stereotype.Repository;
 import com.grupo.listaEspera.models.Reserva;
 
 @Repository
-public interface ReservaRepository extends CrudRepository<Reserva, Long>{
-    List<Reserva> findAll();
+public interface ReservaRepository extends CrudRepository<Reserva, Long> {
+	 List<Reserva> findAll();
+
+	Reserva finById();
+	    
 }
+
