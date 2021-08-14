@@ -10,9 +10,6 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
@@ -45,27 +42,31 @@ public class User {
     @DateTimeFormat(pattern="yyyy-MM-dd")
     private Date updatedAt;
    
-  //========= Relacion NxN Producto-Pedido =========
-    @OneToMany(mappedBy="users",  fetch = FetchType.LAZY)
-   
-    private List<Reserva> reservas;
+    //========= Relacion 1xN User-Reserva =========
+  	@OneToMany(mappedBy="user", fetch = FetchType.LAZY)
+  	private List<Reserva> reservaList;
  
     //-------------------------------------------------------
         
     
 	public User() {
 	}
-	
-	public User(String nombre, String apellido, String numTelefono,  String email,
-			List<Reserva> reservas) {
-
+	public User(String nombre, String apellido, String numTelefono, @Size(min = 6, max = 200) @Email String email,
+			List<Reserva> reservaList) {
+		super();
 		this.nombre = nombre;
 		this.apellido = apellido;
 		this.numTelefono = numTelefono;
 		this.email = email;
-		this.reservas = reservas;
+		this.reservaList = reservaList;
 	}
 
+	public List<Reserva> getReservaList() {
+		return reservaList;
+	}
+	public void setReservaList(List<Reserva> reservaList) {
+		this.reservaList = reservaList;
+	}
 	public Long getId() {
 		return id;
 	}
@@ -109,15 +110,6 @@ public class User {
 		this.updatedAt = updatedAt;
 	}
 	
-	
-	public List<Reserva> getReservas() {
-		return reservas;
-	}
-
-	public void setReservas(List<Reserva> reservas) {
-		this.reservas = reservas;
-	}
-
 	@PrePersist
 	protected void onCreate(){
 		this.createdAt = new Date();
