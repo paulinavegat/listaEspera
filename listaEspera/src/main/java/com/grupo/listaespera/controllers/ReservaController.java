@@ -41,7 +41,7 @@ public class ReservaController {
 	public String nuevaReserva ( @Valid @ModelAttribute ("reserva") Reserva reserva, BindingResult result,
 			@PathVariable("usuarioId") Long usuarioId) {
 		if(result.hasErrors()) {
-			return "home.jsp";
+			return "error creando reserva";
 		}else {
 			User user=userService.findUser(usuarioId);
 
