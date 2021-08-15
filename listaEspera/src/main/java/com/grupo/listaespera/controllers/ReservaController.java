@@ -1,10 +1,10 @@
 package com.grupo.listaespera.controllers;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 import javax.validation.Valid;
 
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +17,7 @@ import com.grupo.listaespera.models.Reserva;
 import com.grupo.listaespera.models.User;
 import com.grupo.listaespera.services.ReservaService;
 import com.grupo.listaespera.services.UserService;
+import com.grupo.listaespera.util.ReservaResponse;
 
 @RestController
 public class ReservaController {
@@ -31,8 +32,14 @@ public class ReservaController {
 	}
 
 	@RequestMapping("/reservas")
-	public  List<Reserva> reservas() {
-		return reservaService.allReservas();
+	public  ArrayList<ReservaResponse> reservas() {
+		ArrayList<ReservaResponse> response=new ArrayList<ReservaResponse>();
+		List<Reserva> reservas=reservaService.allReservas();
+		for(Reserva r:reservas) {
+			ReservaResponse rr=new ReservaResponse(r.getId(), r.getNumeroPersonas(), r.getNumeroReserva(), r.getEstadoR(), r.getUser().getEmail());
+			response.add(rr);
+		}
+		return response;
 	}
 
 

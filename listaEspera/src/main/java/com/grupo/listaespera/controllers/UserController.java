@@ -7,13 +7,13 @@ import javax.validation.Valid;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.grupo.listaespera.models.Reserva;
 import com.grupo.listaespera.models.User;
 import com.grupo.listaespera.services.ReservaService;
 import com.grupo.listaespera.services.UserService;
+import com.grupo.listaespera.util.StringResponse;
 
 @RestController
 public class UserController {
@@ -29,9 +29,9 @@ public class UserController {
 
 
 	@PostMapping("/registro")
-	public String crearUser(@Valid @ModelAttribute ("user")User user, @Valid @ModelAttribute ("reserva") Reserva reserva, BindingResult result) {
+	public Reserva crearUser(@Valid @ModelAttribute ("user")User user, @Valid @ModelAttribute ("reserva") Reserva reserva, BindingResult result) {
 		if(result.hasErrors()) {
-			return "error registro";
+			return null;
 		}else {
 			userService.createUser(user);
 			Random Num_Reserva = new Random();
@@ -41,19 +41,20 @@ public class UserController {
 			reserva.setEstadoR(true);
 			reserva.setUser(user);
 			reservaService.createNuevaReserva(reserva);
-			return "usuario creado y reserva creada";
+			return reserva;
 		}   
 	}
 
 	
-    @PostMapping("/user/crear")
-    public String createUser(@Valid @ModelAttribute ("user")User user, BindingResult result) {
-     if(result.hasErrors()) {
-		return "error creando usuario";
-	}else {
-	    userService.createUser(user);
-	    return "usuario creado";
-	}   
-  }
+	@PostMapping("/user/crear")
+	public StringResponse createUser(@Valid @ModelAttribute ("user")User user, BindingResult result) {
+		if(result.hasErrors()) {
+			return null;
+		}else {
+			user=userService.createUser(user);
+			StringResponse response=new StringResponse("creado");
+			return response;
+		}   
+	}
 }
 
