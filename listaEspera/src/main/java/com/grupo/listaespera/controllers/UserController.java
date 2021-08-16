@@ -1,6 +1,7 @@
 package com.grupo.listaespera.controllers;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Random;
 
 import javax.validation.Valid;
@@ -39,20 +40,42 @@ public class UserController {
 			String json = new Gson().toJson(myMap);
 			return json;
 		}else {
-			if(userService.findByEmail(user.getEmail())!=null) {
-				HashMap<String, String> myMap = new HashMap<String, String>();
-				myMap.put("respuesta", "Email ya existe, no se ha creado reserva");
-				String json = new Gson().toJson(myMap);
-				return json;
+			User usuario =userService.findByEmail(user.getEmail());
+			if(usuario!=null) {
+				//verificar si tiene reserva activa
+				//crear reserva si no
+				List<Reserva> reservas=reservaService.findReservasActivas(usuario.getEmail());
+				if(reservas.size()>0) {
+					HashMap<String, String> myMap = new HashMap<String, String>();
+					myMap.put("respuesta", "Usuario tiene reserva activa");
+					String json = new Gson().toJson(myMap);
+					return json;
+				}else {
+					Random Num_Reserva = new Random();
+					int minNumber = 10000;
+					int Random = Num_Reserva.nextInt(minNumber) + 1;
+					reserva.setNumeroReserva(Random);
+					reserva.setEstadoR(true);
+					reserva.setUser(usuario);
+					Reserva reserva2=reservaService.createNuevaReserva(reserva);
+					
+					HashMap<String, String> myMap = new HashMap<String, String>();
+					myMap.put("respuesta", String.valueOf(reserva2.getId()));
+					String json = new Gson().toJson(myMap);
+					return json;
+				}
+				
+			}else {
+				userService.createUser(user);
+				Random Num_Reserva = new Random();
+				int minNumber = 10000;
+				int Random = Num_Reserva.nextInt(minNumber) + 1;
+				reserva.setNumeroReserva(Random);
+				reserva.setEstadoR(true);
+				reserva.setUser(user);
+				reservaService.createNuevaReserva(reserva);
 			}
-			userService.createUser(user);
-			Random Num_Reserva = new Random();
-			int minNumber = 10000;
-			int Random = Num_Reserva.nextInt(minNumber) + 1;
-			reserva.setNumeroReserva(Random);
-			reserva.setEstadoR(true);
-			reserva.setUser(user);
-			reservaService.createNuevaReserva(reserva);
+			
 			
 			String json = new Gson().toJson(reserva);
 			return json;
