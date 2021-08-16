@@ -6,7 +6,6 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 
 import com.grupo.listaespera.models.User;
-import com.grupo.listaespera.repositories.ReservaRepository;
 import com.grupo.listaespera.repositories.UserRepository;
 
 @Service

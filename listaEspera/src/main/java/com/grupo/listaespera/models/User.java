@@ -60,6 +60,14 @@ public class User {
 		this.email = email;
 		this.reservas = reservas;
 	}
+	
+	public User(String nombre, String apellido, String numTelefono, String email) {
+		super();
+		this.nombre = nombre;
+		this.apellido = apellido;
+		this.numTelefono = numTelefono;
+		this.email = email;
+	}
 
 	public Long getId() {
 		return id;

@@ -14,7 +14,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
-
+import javax.validation.constraints.Min;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -26,6 +26,7 @@ public class Reserva {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	// ********** Atributos o Campos ********************
+	@Min(1)
 	private Integer numeroPersonas;
 	private Integer numeroReserva;
 	private Boolean estadoR;

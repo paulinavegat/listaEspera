@@ -50,7 +50,12 @@ public class ReservaService {
             return;
         }
     }
-	
+	public List<Reserva> findReservasHabilitadas(){
+		return reservaRepository.findReservasHabilitadas();
+	}
+	public List<Reserva> findReservasActivas(String email){
+		return reservaRepository.findReservasActivas(email);
+	}
 }
 
 

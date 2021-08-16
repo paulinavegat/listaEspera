@@ -1,18 +1,22 @@
 package com.grupo.listaespera.util;
 
+import java.util.Date;
+
 public class ReservaResponse {
 	private Long id;
 	private Integer numeroPersonas;
 	private Integer numeroReserva;
 	private Boolean estadoR;
 	private String email;
-	public ReservaResponse(Long id, Integer numeroPersonas, Integer numeroReserva, Boolean estadoR, String email) {
+	private Date fecha;
+	public ReservaResponse(Long id, Integer numeroPersonas, Integer numeroReserva, Boolean estadoR, String email,Date fecha) {
 		super();
 		this.id = id;
 		this.numeroPersonas = numeroPersonas;
 		this.numeroReserva = numeroReserva;
 		this.estadoR = estadoR;
 		this.email = email;
+		this.fecha = fecha;
 	}
 	public Long getId() {
 		return id;
@@ -43,6 +47,12 @@ public class ReservaResponse {
 	}
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	public Date getFecha() {
+		return fecha;
+	}
+	public void setFecha(Date fecha) {
+		this.fecha = fecha;
 	}
 	
 }
