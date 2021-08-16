@@ -83,25 +83,25 @@ public class UserController {
 
 	}
 
-	//crea un usuario sin crear reserva
-	@RequestMapping(value = "/user/crear", method = RequestMethod.POST, produces = "application/json")
-	public String createUser(@Valid @ModelAttribute ("user")User user, BindingResult result) {
-		if(result.hasErrors()) {
-			HashMap<String, String> myMap = new HashMap<String, String>();
-			myMap.put("respuesta", "error");
-			String json = new Gson().toJson(myMap);
-			return json;
-		}else {
-			if(userService.findByEmail(user.getEmail())!=null) {
-				HashMap<String, String> myMap = new HashMap<String, String>();
-				myMap.put("respuesta", "Email ya existe, no se ha creado usuario");
-				String json = new Gson().toJson(myMap);
-				return json;
-			}
-			user=userService.createUser(user);
-			String json = new Gson().toJson(user);
-			return json;
-		}   
-	}
+//	//crea un usuario sin crear reserva
+//	@RequestMapping(value = "/user/crear", method = RequestMethod.POST, produces = "application/json")
+//	public String createUser(@Valid @ModelAttribute ("user")User user, BindingResult result) {
+//		if(result.hasErrors()) {
+//			HashMap<String, String> myMap = new HashMap<String, String>();
+//			myMap.put("respuesta", "error");
+//			String json = new Gson().toJson(myMap);
+//			return json;
+//		}else {
+//			if(userService.findByEmail(user.getEmail())!=null) {
+//				HashMap<String, String> myMap = new HashMap<String, String>();
+//				myMap.put("respuesta", "Email ya existe, no se ha creado usuario");
+//				String json = new Gson().toJson(myMap);
+//				return json;
+//			}
+//			user=userService.createUser(user);
+//			String json = new Gson().toJson(user);
+//			return json;
+//		}   
+//	}
 }
 
