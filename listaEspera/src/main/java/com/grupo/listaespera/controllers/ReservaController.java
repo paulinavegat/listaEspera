@@ -2,8 +2,19 @@ package com.grupo.listaespera.controllers;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Properties;
 import java.util.Random;
 
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import javax.validation.Valid;
 
 import org.springframework.validation.BindingResult;
@@ -19,6 +30,7 @@ import com.grupo.listaespera.models.Reserva;
 import com.grupo.listaespera.models.User;
 import com.grupo.listaespera.services.ReservaService;
 import com.grupo.listaespera.services.UserService;
+import com.grupo.listaespera.util.EmailService;
 import com.grupo.listaespera.util.ReservaResponse;
 
 @RestController
@@ -166,19 +178,14 @@ public class ReservaController {
 			j=5;
 		}
 		
-		
 		for(int i=0;i<j;i++) {
 			Reserva res=reservas.get(i);
-			//enviarEmail(res.user.getEmail,i+1)
 			Integer posicion=i+1;
-			System.out.println(res.getUser().getEmail()+" Posicion: "+ posicion);
+	
+				EmailService.enviarNotificacion(res.getUser().getEmail(), posicion,res.getId());
+				System.out.println(res.getUser().getEmail()+" Posicion: "+ posicion);
+			
 		}
-		
-		
-		
-		
-		
-		
 		
 		
 		ReservaResponse response=new ReservaResponse(reserva.getId(), reserva.getNumeroPersonas(), 
