@@ -1,4 +1,5 @@
 package com.grupo.listaespera.controllers;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +31,7 @@ import com.grupo.listaespera.models.Reserva;
 import com.grupo.listaespera.models.User;
 import com.grupo.listaespera.services.ReservaService;
 import com.grupo.listaespera.services.UserService;
+import com.grupo.listaespera.util.EmailSendGrid;
 import com.grupo.listaespera.util.EmailService;
 import com.grupo.listaespera.util.ReservaResponse;
 
@@ -150,40 +152,68 @@ public class ReservaController {
 //		return  response;
 //	}
 //
-//	@RequestMapping("/reserva/deshabilitar/{id}")
-//	public ReservaResponse deshabilitar (@PathVariable("id") Long id) {
-//		Reserva reserva=reservaService.findReserva(id);
-//		Boolean estadoR=false;
-//		reserva.setEstadoR(estadoR);
-//		reservaService.updateReserva(reserva);
-//		//enviar correo a tercero en fila
-//		ReservaResponse response=new ReservaResponse(reserva.getId(), reserva.getNumeroPersonas(), 
-//				reserva.getNumeroReserva(), reserva.getEstadoR(), reserva.getUser().getEmail(),reserva.getCreatedAt());
-//		return  response;
-//	}
-
-	@RequestMapping("/reserva/cambiarstatus/{idReserva}")
-	public ReservaResponse cambiarStatus(@PathVariable("idReserva") Long idReserva) {
+	
+	@RequestMapping("/reserva/deshabilitar/{id}")
+	public ReservaResponse deshabilitar (@PathVariable("id") Long id) throws IOException {
 		
-		Reserva reserva=reservaService.findReserva(idReserva);
-		reserva.setEstadoR(!reserva.getEstadoR());
-		reserva=reservaService.updateReserva(reserva);
+		Reserva reserva=reservaService.findReserva(id);
+		if(reserva==null) {
+			return null;
+		}
+		Boolean estadoR=false;
+		reserva.setEstadoR(estadoR);
+		reservaService.updateReserva(reserva);
 		
 		List<Reserva> reservas=reservaService.findReservasHabilitadas();
-		
+
 		int j;
-		if(reservas.size()<=5) {
+		if(reservas.size()<=3) {
 			j=reservas.size();
 		}else {
-			j=5;
+			j=3;
 		}
 		
 		for(int i=0;i<j;i++) {
 			Reserva res=reservas.get(i);
 			Integer posicion=i+1;
 	
-				EmailService.enviarNotificacion(res.getUser().getEmail(), posicion,res.getId());
-				System.out.println(res.getUser().getEmail()+" Posicion: "+ posicion);
+			//EmailService.enviarNotificacion(res.getUser().getEmail(), posicion,res.getId());
+			//EmailSendGrid.sendEmail(res.getUser().getEmail(),posicion,res.getId());
+			System.out.println(res.getUser().getEmail()+" Posicion: "+ posicion+" Reserva id: "+res.getId());
+			
+		}
+		
+		ReservaResponse response=new ReservaResponse(reserva.getId(), reserva.getNumeroPersonas(), 
+				reserva.getNumeroReserva(), reserva.getEstadoR(), reserva.getUser().getEmail(),reserva.getCreatedAt());
+		return  response;
+	}
+
+	@RequestMapping("/reserva/cambiarstatus/{idReserva}")
+	public ReservaResponse cambiarStatus(@PathVariable("idReserva") Long idReserva) throws IOException {
+		
+		Reserva reserva=reservaService.findReserva(idReserva);
+		if(reserva==null) {
+			return null;
+		}
+		reserva.setEstadoR(!reserva.getEstadoR());
+		reserva=reservaService.updateReserva(reserva);
+		
+		List<Reserva> reservas=reservaService.findReservasHabilitadas();
+		
+		int j;
+		if(reservas.size()<=3) {
+			j=reservas.size();
+		}else {
+			j=3;
+		}
+		
+		for(int i=0;i<j;i++) {
+			Reserva res=reservas.get(i);
+			Integer posicion=i+1;
+	
+			//EmailService.enviarNotificacion(res.getUser().getEmail(), posicion,res.getId());
+			//EmailSendGrid.sendEmail(res.getUser().getEmail(),posicion,res.getId());
+			System.out.println(res.getUser().getEmail()+" Posicion: "+ posicion+" Reserva id: "+res.getId());
 			
 		}
 		

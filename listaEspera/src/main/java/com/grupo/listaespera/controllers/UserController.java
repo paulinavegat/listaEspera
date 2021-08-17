@@ -42,8 +42,6 @@ public class UserController {
 		}else {
 			User usuario =userService.findByEmail(user.getEmail());
 			if(usuario!=null) {
-				//verificar si tiene reserva activa
-				//crear reserva si no
 				List<Reserva> reservas=reservaService.findReservasActivas(usuario.getEmail());
 				if(reservas.size()>0) {
 					HashMap<String, String> myMap = new HashMap<String, String>();
@@ -51,6 +49,7 @@ public class UserController {
 					String json = new Gson().toJson(myMap);
 					return json;
 				}else {
+					//crea reserva para usuario existente
 					Random Num_Reserva = new Random();
 					int minNumber = 10000;
 					int Random = Num_Reserva.nextInt(minNumber) + 1;
@@ -60,12 +59,13 @@ public class UserController {
 					Reserva reserva2=reservaService.createNuevaReserva(reserva);
 					
 					HashMap<String, String> myMap = new HashMap<String, String>();
-					myMap.put("respuesta", String.valueOf(reserva2.getId()));
+					myMap.put("Reserva id", String.valueOf(reserva2.getId()));
 					String json = new Gson().toJson(myMap);
 					return json;
 				}
 				
 			}else {
+				//crea usuario y reserva
 				userService.createUser(user);
 				Random Num_Reserva = new Random();
 				int minNumber = 10000;
