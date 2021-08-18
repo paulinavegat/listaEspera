@@ -29,20 +29,21 @@ import org.springframework.web.bind.annotation.RestController;
 import com.google.gson.Gson;
 import com.grupo.listaespera.models.Reserva;
 import com.grupo.listaespera.models.User;
+import com.grupo.listaespera.services.EmailService;
 import com.grupo.listaespera.services.ReservaService;
 import com.grupo.listaespera.services.UserService;
 import com.grupo.listaespera.util.EmailSendGrid;
-import com.grupo.listaespera.util.EmailService;
+import com.grupo.listaespera.util.EmailSmtpGmail;
 import com.grupo.listaespera.util.ReservaResponse;
 
 @RestController
 public class ReservaController {
 	private UserService userService;
 	private ReservaService reservaService;
+	private EmailService emailService;
 	
-	
-	public ReservaController(UserService userService, ReservaService reservaService) {
-
+	public ReservaController(UserService userService, ReservaService reservaService,EmailService emailService) {
+		this.emailService = emailService;
 		this.userService = userService;
 		this.reservaService = reservaService;
 	}
@@ -160,6 +161,9 @@ public class ReservaController {
 		if(reserva==null) {
 			return null;
 		}
+		if(!reserva.getEstadoR()) {
+			return null;
+		}
 		Boolean estadoR=false;
 		reserva.setEstadoR(estadoR);
 		reservaService.updateReserva(reserva);
@@ -167,20 +171,27 @@ public class ReservaController {
 		List<Reserva> reservas=reservaService.findReservasHabilitadas();
 
 		int j;
-		if(reservas.size()<=3) {
+		if(reservas.size()<=5) {
 			j=reservas.size();
 		}else {
-			j=3;
+			j=5;
 		}
 		
 		for(int i=0;i<j;i++) {
 			Reserva res=reservas.get(i);
 			Integer posicion=i+1;
 	
-			//EmailService.enviarNotificacion(res.getUser().getEmail(), posicion,res.getId());
+			//EmailSmtpGmail.enviarNotificacion(res.getUser().getEmail(), posicion,res.getId());
 			//EmailSendGrid.sendEmail(res.getUser().getEmail(),posicion,res.getId());
 			System.out.println(res.getUser().getEmail()+" Posicion: "+ posicion+" Reserva id: "+res.getId());
-			
+
+//			try {
+//				emailService.sendEmail(res.getUser().getEmail(), posicion,res.getId());
+//			} catch (MessagingException e) {
+//				// TODO Auto-generated catch block
+//				System.out.println("error al enviar correo");
+//				e.printStackTrace();
+//			}
 		}
 		
 		ReservaResponse response=new ReservaResponse(reserva.getId(), reserva.getNumeroPersonas(), 
@@ -201,17 +212,17 @@ public class ReservaController {
 		List<Reserva> reservas=reservaService.findReservasHabilitadas();
 		
 		int j;
-		if(reservas.size()<=3) {
+		if(reservas.size()<=5) {
 			j=reservas.size();
 		}else {
-			j=3;
+			j=5;
 		}
 		
 		for(int i=0;i<j;i++) {
 			Reserva res=reservas.get(i);
 			Integer posicion=i+1;
 	
-			//EmailService.enviarNotificacion(res.getUser().getEmail(), posicion,res.getId());
+			//EmailSmtpGmail.enviarNotificacion(res.getUser().getEmail(), posicion,res.getId());
 			//EmailSendGrid.sendEmail(res.getUser().getEmail(),posicion,res.getId());
 			System.out.println(res.getUser().getEmail()+" Posicion: "+ posicion+" Reserva id: "+res.getId());
 			

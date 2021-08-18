@@ -13,7 +13,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-public class EmailService {
+public class EmailSmtpGmail {
 	
 	public static boolean enviarNotificacion(String correo,int posicion,Long id) {
 		final String username = "correo@gmail.com";
