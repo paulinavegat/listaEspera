@@ -1,4 +1,4 @@
-package com.grupo.listaespera.util;
+package com.grupo.listaespera.dto;
 
 import java.util.Date;
 

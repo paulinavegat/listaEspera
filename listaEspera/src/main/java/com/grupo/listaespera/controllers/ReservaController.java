@@ -27,14 +27,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.google.gson.Gson;
+import com.grupo.listaespera.dto.ReservaResponse;
 import com.grupo.listaespera.models.Reserva;
 import com.grupo.listaespera.models.User;
+import com.grupo.listaespera.notificacion.INotificacion;
+import com.grupo.listaespera.notificacion.imp.SendGridEmail;
+import com.grupo.listaespera.notificacion.imp.SmtpEmail;
+import com.grupo.listaespera.notificacion.imp.TwilioSms;
 import com.grupo.listaespera.services.EmailService;
 import com.grupo.listaespera.services.ReservaService;
 import com.grupo.listaespera.services.UserService;
-import com.grupo.listaespera.util.EmailSendGrid;
-import com.grupo.listaespera.util.EmailSmtpGmail;
-import com.grupo.listaespera.util.ReservaResponse;
+import com.sendgrid.TwilioEmail;
+import com.twilio.Twilio;
 
 @RestController
 public class ReservaController {
@@ -154,84 +158,87 @@ public class ReservaController {
 //	}
 //
 	
-	@RequestMapping("/reserva/deshabilitar/{id}")
-	public ReservaResponse deshabilitar (@PathVariable("id") Long id) throws IOException {
-		
+	@RequestMapping(value = "/reserva/deshabilitar/{id}", method = RequestMethod.GET, produces = "application/json")
+	public String deshabilitar (@PathVariable("id") Long id) {
+		HashMap<String, String> myMap = new HashMap<String, String>();
 		Reserva reserva=reservaService.findReserva(id);
 		if(reserva==null) {
-			return null;
+			myMap.put("Respuesta", "Reserva no encontrada");
+			String json = new Gson().toJson(myMap);
+			return json;
 		}
 		if(!reserva.getEstadoR()) {
-			return null;
+			myMap.put("Respuesta", "Reserva estaba cancelada");
+			String json = new Gson().toJson(myMap);
+			return json;
 		}
 		Boolean estadoR=false;
 		reserva.setEstadoR(estadoR);
 		reservaService.updateReserva(reserva);
 		
 		List<Reserva> reservas=reservaService.findReservasHabilitadas();
-
-		int j;
-		if(reservas.size()<=5) {
-			j=reservas.size();
-		}else {
-			j=5;
-		}
-		
-		for(int i=0;i<j;i++) {
-			Reserva res=reservas.get(i);
-			Integer posicion=i+1;
-	
-			//EmailSmtpGmail.enviarNotificacion(res.getUser().getEmail(), posicion,res.getId());
-			//EmailSendGrid.sendEmail(res.getUser().getEmail(),posicion,res.getId());
-			System.out.println(res.getUser().getEmail()+" Posicion: "+ posicion+" Reserva id: "+res.getId());
-
-//			try {
-//				emailService.sendEmail(res.getUser().getEmail(), posicion,res.getId());
-//			} catch (MessagingException e) {
-//				// TODO Auto-generated catch block
-//				System.out.println("error al enviar correo");
-//				e.printStackTrace();
-//			}
-		}
-		
-		ReservaResponse response=new ReservaResponse(reserva.getId(), reserva.getNumeroPersonas(), 
-				reserva.getNumeroReserva(), reserva.getEstadoR(), reserva.getUser().getEmail(),reserva.getCreatedAt());
-		return  response;
-	}
-
-	@RequestMapping("/reserva/cambiarstatus/{idReserva}")
-	public ReservaResponse cambiarStatus(@PathVariable("idReserva") Long idReserva) throws IOException {
-		
-		Reserva reserva=reservaService.findReserva(idReserva);
-		if(reserva==null) {
-			return null;
-		}
-		reserva.setEstadoR(!reserva.getEstadoR());
-		reserva=reservaService.updateReserva(reserva);
-		
-		List<Reserva> reservas=reservaService.findReservasHabilitadas();
 		
 		int j;
-		if(reservas.size()<=5) {
+		if(reservas.size()<=3) {
 			j=reservas.size();
 		}else {
-			j=5;
+			j=3;
 		}
+		
+		//INotificacion notificacion=new SmtpEmail();
+		INotificacion notificacion =new SendGridEmail();
+		//INotificacion notificacion=new TwilioSms();
 		
 		for(int i=0;i<j;i++) {
-			Reserva res=reservas.get(i);
+			Reserva reservation=reservas.get(i);
 			Integer posicion=i+1;
-	
-			//EmailSmtpGmail.enviarNotificacion(res.getUser().getEmail(), posicion,res.getId());
-			//EmailSendGrid.sendEmail(res.getUser().getEmail(),posicion,res.getId());
-			System.out.println(res.getUser().getEmail()+" Posicion: "+ posicion+" Reserva id: "+res.getId());
-			
+			try {
+				notificacion.notificar(reservation, posicion);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 		
-		
-		ReservaResponse response=new ReservaResponse(reserva.getId(), reserva.getNumeroPersonas(), 
-				reserva.getNumeroReserva(), reserva.getEstadoR(), reserva.getUser().getEmail(),reserva.getCreatedAt());
-		return  response;
+		myMap.put("Reserva Id: ", reserva.getId().toString());
+		myMap.put("Reserva Usuario: ", reserva.getUser().getEmail());
+		myMap.put("Reserva Estado: ", reserva.getEstadoR().toString());
+		String json = new Gson().toJson(myMap);
+		return json;
 	}
+
+//	@RequestMapping("/reserva/cambiarstatus/{idReserva}")
+//	public ReservaResponse cambiarStatus(@PathVariable("idReserva") Long idReserva) throws IOException {
+//		
+//		Reserva reserva=reservaService.findReserva(idReserva);
+//		if(reserva==null) {
+//			return null;
+//		}
+//		reserva.setEstadoR(!reserva.getEstadoR());
+//		reserva=reservaService.updateReserva(reserva);
+//		
+//		List<Reserva> reservas=reservaService.findReservasHabilitadas();
+//		
+//		int j;
+//		if(reservas.size()<=5) {
+//			j=reservas.size();
+//		}else {
+//			j=5;
+//		}
+//		
+//		for(int i=0;i<j;i++) {
+//			Reserva res=reservas.get(i);
+//			Integer posicion=i+1;
+//	
+//			//EmailSmtpGmail.enviarNotificacion(res.getUser().getEmail(), posicion,res.getId());
+//			EmailSendGrid.sendEmail(res.getUser().getEmail(),posicion,res.getId());
+//			System.out.println(res.getUser().getEmail()+" Posicion: "+ posicion+" Reserva id: "+res.getId());
+//			
+//		}
+//		
+//		
+//		ReservaResponse response=new ReservaResponse(reserva.getId(), reserva.getNumeroPersonas(), 
+//				reserva.getNumeroReserva(), reserva.getEstadoR(), reserva.getUser().getEmail(),reserva.getCreatedAt());
+//		return  response;
+//	}
 
 }

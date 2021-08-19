@@ -11,6 +11,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import com.grupo.listaespera.models.Reserva;
+
 
 @Service
 public class EmailService {
@@ -18,16 +20,16 @@ public class EmailService {
 	@Autowired
 	JavaMailSender javaMailSender;
 
-	public String sendEmail(String correo,int posicion,Long reservaId) throws MessagingException {
+	public String sendEmail(Reserva reserva,int posicion) throws MessagingException {
 		MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, "utf-8");
 		String htmlMsg = "<h2>Tu posicion en la fila es:"+posicion+"</h2>"
-	    		+ "<h4><a href='http://localhost:8080/reserva/deshabilitar/"+reservaId+"'>Cancelar</a></h4>";
+	    		+ "<h4><a href='http://localhost:8080/reserva/deshabilitar/"+reserva.getId()+"'>Cancelar</a></h4>";
 		//mimeMessage.setContent(htmlMsg, "text/html"); /** Use this or below line **/
 		helper.setText(htmlMsg, true); // Use this or above line.
-		helper.setTo(correo);
+		helper.setTo(reserva.getUser().getEmail());
 		helper.setSubject("Lista espera");
-		helper.setFrom("correo@gmail.com");
+		helper.setFrom("alvaro.llancavil@gmail.com");
 		javaMailSender.send(mimeMessage);
 		return "correo enviado";
 	}
