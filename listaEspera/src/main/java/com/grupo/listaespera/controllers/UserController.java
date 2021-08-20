@@ -7,6 +7,7 @@ import java.util.Random;
 import javax.validation.Valid;
 
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,6 +30,21 @@ public class UserController {
 		this.userService = userService;
 		this.reservaService = reservaService;
 	}
+	
+	@GetMapping("/")
+    public String helloWorld() {
+        return "No necesitas loguearte de nuevo";
+    }
+
+    @GetMapping("/not-restricted")
+    public String notRestricted() {
+        return "No necesitas loguearte de nuevo";
+    }
+
+    @GetMapping("/restricted")
+    public String restricted() {
+        return "Necesitas ingresar a tu cuenta ";
+    }
 
 	//crea nuevo usuario y crea nueva reserva
 	@RequestMapping(value = "/registro", method = RequestMethod.POST, produces = "application/json")
@@ -80,6 +96,7 @@ public class UserController {
 			String json = new Gson().toJson(reserva);
 			return json;
 		}
+
 
 	}
 
